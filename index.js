@@ -26,12 +26,12 @@ const run = async () => {
     await client.connect();
     console.log("Connect");
     const toolsCollection = client.db("nortexTools").collection("tools");
-
+// Get all tools
     app.get("/tools", async (req, res) => {
       const tools = await toolsCollection.find({}).toArray();
       res.send(tools);
     });
-
+// Get single tools by id
     app.get("/tools/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
