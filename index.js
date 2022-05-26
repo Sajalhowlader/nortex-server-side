@@ -44,7 +44,10 @@ const run = async () => {
     const toolsCollection = client.db("nortexTools").collection("tools");
     // Bookings Collection
     const bookingsCollection = client.db("nortexTools").collection("bookings");
+    // Users collection
     const usersCollection = client.db("nortexTools").collection("users");
+    // Review Collection
+    const reviewCollection = client.db("nortexTools").collection("reviews");
     // jwt token
     app.put("/singIn/:email", async (req, res) => {
       const email = req.params.email;
