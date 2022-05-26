@@ -84,15 +84,14 @@ const run = async () => {
 
     // Get my booking products
     app.get("/myItems", verifyJwt, async (req, res) => {
-      const decoEmail = req.decoded.email;
-      const email = req.query.email;
-      if (email === decoEmail) {
-        const orders = await bookingsCollection
-          .find({ email: email })
-          .toArray();
-        res.send(orders);
+      const email = req.query.userEmail;
+      const decodedEmail = req.decoded.email;
+      if (decodedEmail === email) {
+        const query = { email: email };
+        const myItems = await bookingsCollection.find(query).toArray();
+        res.send(myItems);
       } else {
-        res.status(403).send({ message: "Forbidden Access" });
+        return res.status(403).send({ message: "Forbidden Access" });
       }
     });
   } finally {
