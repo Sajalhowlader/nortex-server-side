@@ -71,6 +71,10 @@ const run = async () => {
       const tools = await toolsCollection.find({}).toArray();
       res.send(tools);
     });
+    app.get("/reviews", async (req, res) => {
+      const reviews = await reviewCollection.find({}).toArray();
+      res.send(reviews);
+    });
     // Get single tools by id
     app.get("/tools/:id", async (req, res) => {
       const id = req.params.id;
