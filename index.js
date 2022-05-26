@@ -89,6 +89,12 @@ const run = async () => {
       res.send(booked);
     });
 
+    app.post("/addReview", async (req, res) => {
+      const userReview = req.body;
+      const review = await reviewCollection.insertOne(userReview);
+      res.send(review);
+    });
+
     // Get my booking products
     app.get("/myItems", verifyJwt, async (req, res) => {
       const email = req.query.userEmail;
