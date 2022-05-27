@@ -48,6 +48,8 @@ const run = async () => {
     const usersCollection = client.db("nortexTools").collection("users");
     // Review Collection
     const reviewCollection = client.db("nortexTools").collection("reviews");
+    const profileCollection = client.db("nortexTools").collection("profiles");
+
     // jwt token
     app.put("/singIn/:email", async (req, res) => {
       const email = req.params.email;
@@ -64,6 +66,18 @@ const run = async () => {
         { expiresIn: "1d" }
       );
       res.send({ result, token });
+    });
+    // Update Profile
+    app.put("/updateProfile/:email", async (req, res) => {
+      const email = req.params.email;
+      const person = req.body;
+      const filter = { email: email };
+      const option = { upsert: true };
+      const updateDoc = {
+        $set: person,
+      };
+      const result = await profileCollection.updateOne(filter, updateDoc, option);
+      res.send(result);
     });
 
     // Get all tools
