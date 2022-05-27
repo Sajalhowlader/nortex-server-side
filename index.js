@@ -61,7 +61,7 @@ const run = async () => {
         res.status(403).send({ message: "Forbidden access" });
       }
     };
-    // Get an admin
+    // Admin can make a admin
     app.get("/admin/:email", async (req, res) => {
       const adminEmail = req.params.email;
       const admin = await usersCollection.findOne({ email: adminEmail });
@@ -69,7 +69,7 @@ const run = async () => {
       res.send({ admin: isAdmin });
     });
     // Make an admin
-    app.put("/user/admin/:email", verifyJwt, async (req, res) => {
+    app.put("/user/admin/:email", verifyJwt, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const updateDoc = {
@@ -142,7 +142,19 @@ const run = async () => {
       const review = await reviewCollection.insertOne(userReview);
       res.send(review);
     });
-
+    // Add Product
+    app.post("/addProduct", async (req, res) => {
+      const addProduct = req.body;
+      const add = await toolsCollection.insertOne(addProduct);
+      res.send(add);
+    });
+    // Delete Product
+    app.delete('/deleteTools/:id', verifyJwt, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) }
+      const deleteProduct = await toolsCollection.deleteOne(query)
+      res.send(deleteProduct)
+    })
     // Get my booking products
     app.get("/myItems", verifyJwt, async (req, res) => {
       const email = req.query.userEmail;
