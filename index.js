@@ -49,7 +49,35 @@ const run = async () => {
     // Review Collection
     const reviewCollection = client.db("nortexTools").collection("reviews");
     const profileCollection = client.db("nortexTools").collection("profiles");
-
+    // varify Admin
+    const verifyAdmin = async (req, res, next) => {
+      const adminRequester = req.decoded.email;
+      const adminRequesterEmail = await usersCollection.findOne({
+        email: adminRequester,
+      });
+      if (adminRequesterEmail.role === "admin") {
+        next();
+      } else {
+        res.status(403).send({ message: "Forbidden access" });
+      }
+    };
+    // Get an admin
+    app.get("/admin/:email", async (req, res) => {
+      const adminEmail = req.params.email;
+      const admin = await usersCollection.findOne({ email: adminEmail });
+      const isAdmin = admin.role === "admin";
+      res.send({ admin: isAdmin });
+    });
+    // Make an admin
+    app.put("/user/admin/:email", verifyJwt, async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
     // jwt token
     app.put("/singIn/:email", async (req, res) => {
       const email = req.params.email;
@@ -68,7 +96,7 @@ const run = async () => {
       res.send({ result, token });
     });
     // Update Profile
-    app.put("/updateProfile/:email", async (req, res) => {
+    app.put("/updateProfile/:email", verifyJwt, async (req, res) => {
       const email = req.params.email;
       const person = req.body;
       const filter = { email: email };
@@ -85,9 +113,15 @@ const run = async () => {
       const tools = await toolsCollection.find({}).toArray();
       res.send(tools);
     });
+    // get review
     app.get("/reviews", async (req, res) => {
       const reviews = await reviewCollection.find({}).toArray();
       res.send(reviews);
+    });
+    // get all users
+    app.get("/allUsers", async (req, res) => {
+      const allUsers = await usersCollection.find({}).toArray();
+      res.send(allUsers);
     });
     // Get single tools by id
     app.get("/tools/:id", async (req, res) => {
