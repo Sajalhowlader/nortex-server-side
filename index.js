@@ -114,12 +114,12 @@ const run = async () => {
       res.send(tools);
     });
     // get review
-    app.get("/reviews", async (req, res) => {
+    app.get("/reviews", verifyJwt, async (req, res) => {
       const reviews = await reviewCollection.find({}).toArray();
       res.send(reviews);
     });
     // get all users
-    app.get("/allUsers", async (req, res) => {
+    app.get("/allUsers", verifyJwt, verifyAdmin, async (req, res) => {
       const allUsers = await usersCollection.find({}).toArray();
       res.send(allUsers);
     });
@@ -131,19 +131,19 @@ const run = async () => {
       res.send(tool);
     });
     // Book products
-    app.post("/bookings", async (req, res) => {
+    app.post("/bookings", verifyJwt, async (req, res) => {
       const bookingItem = req.body;
       const booked = await bookingsCollection.insertOne(bookingItem);
       res.send(booked);
     });
 
-    app.post("/addReview", async (req, res) => {
+    app.post("/addReview", verifyJwt, async (req, res) => {
       const userReview = req.body;
       const review = await reviewCollection.insertOne(userReview);
       res.send(review);
     });
     // Add Product
-    app.post("/addProduct", async (req, res) => {
+    app.post("/addProduct", verifyJwt, verifyAdmin, async (req, res) => {
       const addProduct = req.body;
       const add = await toolsCollection.insertOne(addProduct);
       res.send(add);
