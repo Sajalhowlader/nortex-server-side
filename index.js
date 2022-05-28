@@ -87,6 +87,26 @@ const run = async () => {
     // });
 
 
+    // app.patch('/booking/:id', verifyJwt, async (req, res) => {
+    //   const id = req.params.id;
+    //   const payment = req.body;
+    //   const filter = { _id: ObjectId(id) };
+    //   const updatedDoc = {
+    //     $set: {
+    //       paid: true,
+    //       transactionId: payment.transactionId
+    //     }
+    //   }
+
+    //   const result = await paymentCollection.insertOne(payment);
+    //   const updatedBooking = await bookingCollection.updateOne(filter, updatedDoc);
+    //   res.send(updatedBooking);
+    // })
+
+
+
+
+
     // Make an admin
     app.put("/user/admin/:email", verifyJwt, verifyAdmin, async (req, res) => {
       const email = req.params.email;
