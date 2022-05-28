@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
 const app = express();
+req
 const port = process.env.PORT || 5000;
 
 // Middle Ware
@@ -13,6 +14,7 @@ app.use(express.json());
 app.get("/", async (req, res) => {
   res.send("Server is connect");
 });
+// Veryfy with JWT token
 const verifyJwt = (req, res, next) => {
   const authorizationToken = req.headers.authorization;
 
@@ -39,7 +41,6 @@ const client = new MongoClient(uri, {
 const run = async () => {
   try {
     await client.connect();
-    console.log("Connect");
     //Tools Collection
     const toolsCollection = client.db("nortexTools").collection("tools");
     // Bookings Collection
@@ -167,6 +168,13 @@ const run = async () => {
         return res.status(403).send({ message: "Forbidden Access" });
       }
     });
+    // Get my one item by Id
+    app.get('/getMyItems/:id', verifyJwt, async (req, res) => {
+      const paymentId = req.params.id;
+      const query = { _id: ObjectId(paymentId) }
+      const booking = await bookingsCollection.findOne(query)
+      res.send(booking)
+    })
   } finally {
   }
 };
