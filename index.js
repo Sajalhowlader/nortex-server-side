@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
 const app = express();
-req
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 const port = process.env.PORT || 5000;
 
 // Middle Ware
@@ -69,6 +69,24 @@ const run = async () => {
       const isAdmin = admin.role === "admin";
       res.send({ admin: isAdmin });
     });
+
+
+    // app.post('/create-payment-intent', async (req, res) => {
+    //   const service = req.body;
+    //   console.log(service);
+    //   const price = service.price;
+    //   const amount = price * 100;
+    //   console.log(amount);
+    //   const paymentIntent = await stripe.paymentIntents.create({
+    //     amount: amount,
+    //     currency: 'usd',
+    //     payment_method_types: ['card']
+    //   });
+    //   console.log(paymentIntent);
+    //   res.send({ clientSecret: paymentIntent.client_secret })
+    // });
+
+
     // Make an admin
     app.put("/user/admin/:email", verifyJwt, verifyAdmin, async (req, res) => {
       const email = req.params.email;
@@ -108,6 +126,7 @@ const run = async () => {
       const result = await profileCollection.updateOne(filter, updateDoc, option);
       res.send(result);
     });
+
 
     // Get all tools
     app.get("/tools", async (req, res) => {
@@ -175,7 +194,21 @@ const run = async () => {
       const booking = await bookingsCollection.findOne(query)
       res.send(booking)
     })
-  } finally {
+
+    app.post('/create-payment-intent', async (req, res) => {
+      const service = req.body;
+      const price = service.price;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      });
+      res.send({ clientSecret: paymentIntent.client_secret })
+    });
+  }
+  finally {
+
   }
 };
 run().catch(console.dir);
